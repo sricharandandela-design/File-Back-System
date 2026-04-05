@@ -1,0 +1,206 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_CHILD 5
+
+// Structure for each file version (tree node)
+struct Node {
+    int version;
+    char filename[50];
+    struct Node* parent;
+    struct Node* children[MAX_CHILD];
+    int childCount;
+};
+
+// Create new node
+struct Node* createNode(int version, char name[], struct Node* parent) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->version = version;
+    strcpy(newNode->filename, name);
+    newNode->parent = parent;
+    newNode->childCount = 0;
+
+    for(int i = 0; i < MAX_CHILD; i++)
+        newNode->children[i] = NULL;
+
+    return newNode;
+}
+
+// Search node by version (DFS)
+struct Node* search(struct Node* root, int version) {
+    if(root == NULL)
+        return NULL;
+
+    if(root->version == version)
+        return root;
+
+    for(int i = 0; i < root->childCount; i++) {
+        struct Node* found = search(root->children[i], version);
+        if(found != NULL)
+            return found;
+    }
+    return NULL;
+}
+
+// Add new version
+void addVersion(struct Node* root) {
+    int parentVer, newVer;
+    char name[50];
+
+    printf("Enter parent version: ");
+    scanf("%d", &parentVer);
+
+    struct Node* parent = search(root, parentVer);
+
+    if(parent == NULL) {
+        printf("Parent version not found!\n");
+        return;
+    }
+
+    if(parent->childCount >= MAX_CHILD) {
+        printf("Max child limit reached!\n");
+        return;
+    }
+
+    printf("Enter new version number: ");
+    scanf("%d", &newVer);
+
+    printf("Enter file name: ");
+    scanf("%s", name);
+
+    struct Node* newNode = createNode(newVer, name, parent);
+    parent->children[parent->childCount++] = newNode;
+
+    printf("Version added successfully!\n");
+}
+
+// Display tree (DFS)
+void display(struct Node* root, int level) {
+    if(root == NULL)
+        return;
+
+    for(int i = 0; i < level; i++)
+        printf("  ");
+
+    printf("Version %d (%s)\n", root->version, root->filename);
+
+    for(int i = 0; i < root->childCount; i++)
+        display(root->children[i], level + 1);
+}
+
+// Update version (change filename)
+void update(struct Node* root) {
+    int ver;
+    char newName[50];
+
+    printf("Enter version to update: ");
+    scanf("%d", &ver);
+
+    struct Node* node = search(root, ver);
+
+    if(node == NULL) {
+        printf("Version not found!\n");
+        return;
+    }
+
+    printf("Enter new file name: ");
+    scanf("%s", newName);
+
+    strcpy(node->filename, newName);
+    printf("Updated successfully!\n");
+}
+
+// Delete node (only leaf nodes for simplicity)
+void deleteVersion(struct Node* root) {
+    int ver;
+    printf("Enter version to delete: ");
+    scanf("%d", &ver);
+
+    struct Node* node = search(root, ver);
+
+    if(node == NULL || node->parent == NULL) {
+        printf("Cannot delete root or invalid version!\n");
+        return;
+    }
+
+    if(node->childCount > 0) {
+        printf("Cannot delete! Not a leaf node.\n");
+        return;
+    }
+
+    struct Node* parent = node->parent;
+
+    for(int i = 0; i < parent->childCount; i++) {
+        if(parent->children[i] == node) {
+            for(int j = i; j < parent->childCount - 1; j++) {
+                parent->children[j] = parent->children[j + 1];
+            }
+            parent->childCount--;
+            break;
+        }
+    }
+
+    free(node);
+    printf("Deleted successfully!\n");
+}
+
+// Main function
+int main() {
+    int choice;
+
+    // Create root version
+    struct Node* root = createNode(1, "root_file", NULL);
+
+    while(1) {
+        printf("\n===== File Backup System =====\n");
+        printf("1. Add File Version\n");
+        printf("2. Delete Version\n");
+        printf("3. Update Version\n");
+        printf("4. Search Version\n");
+        printf("5. Display All Versions\n");
+        printf("6. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1:
+                addVersion(root);
+                break;
+
+            case 2:
+                deleteVersion(root);
+                break;
+
+            case 3:
+                update(root);
+                break;
+
+            case 4: {
+                int ver;
+                printf("Enter version to search: ");
+                scanf("%d", &ver);
+                struct Node* found = search(root, ver);
+                if(found)
+                    printf("Found: Version %d (%s)\n", found->version, found->filename);
+                else
+                    printf("Version not found!\n");
+                break;
+            }
+
+            case 5:
+                printf("\nFile Versions Tree:\n");
+                display(root, 0);
+                break;
+
+            case 6:
+                printf("Exiting...\n");
+                exit(0);
+
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+
+    return 0;
+}
