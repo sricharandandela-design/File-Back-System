@@ -139,6 +139,8 @@ It helps in:
   * Recursion (DFS traversal)
 
 ---
+## 🖥️ Demo Output
+```
 
 
 ![WhatsApp Image 2026-04-05 at 2 44 42 PM](https://github.com/user-attachments/assets/2880dd7d-3de5-4293-b0a1-c636af56cbd0)
@@ -149,35 +151,7 @@ It helps in:
 ![WhatsApp Image 2026-04-05 at 2 46 10 PM](https://github.com/user-attachments/assets/b5afdd9b-704f-4e53-ac3f-a26da32f806d)
 <img width="198" height="189" alt="Screenshot 2026-04-05 165550" src="https://github.com/user-attachments/assets/2a6d2c90-b1df-4422-9143-59303e77ea38" />
 
-
-
-## 🖥️ Demo Output
-
 ```
-
-
-
-===== File Backup System =====
-1. Add File Version
-2. Delete Version
-3. Update Version
-4. Search Version
-5. Display All Versions
-6. Exit
-Enter choice: 1
-
-Enter parent version: 1
-Enter new version number: 2
-Enter file name: fileA
-Version added successfully!
-
-Enter choice: 5
-
-File Versions Tree:
-Version 1 (root_file)
-  Version 2 (fileA)
-```
-
 ---
 
 ## ✅ Conclusion
